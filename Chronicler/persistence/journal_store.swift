@@ -35,9 +35,11 @@ class JournalStore: ObservableObject {
         saveEntries()
     }
     
-    func updateEntry(_ old_entry_index: Int, _ new_entry: JournalEntry) {
-        entries[old_entry_index] = new_entry
-        saveEntries()
+    func updateEntry(_ new_entry: JournalEntry) {
+        if let index = entries.firstIndex(where: {$0.id == new_entry.id}) {
+            entries[index] = new_entry
+            saveEntries()
+        }
     }
     
     func deleteEntry(_ entry: JournalEntry) {
