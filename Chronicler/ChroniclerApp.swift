@@ -9,9 +9,10 @@ import SwiftUI
 
 @main
 struct ChroniclerApp: App {
+    @StateObject private var store = JournalStore()
     var body: some Scene {
         WindowGroup {
-            MainView()
+            MainView().environmentObject(store)
         }
     }
 }

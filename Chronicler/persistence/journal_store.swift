@@ -25,7 +25,9 @@ class JournalStore: ObservableObject {
         loadEntries()
     }
     
-    // Public methods //
+    // ///////////////////////////////////// //
+    // /////////// Public methods ///////// //
+    // ///////////////////////////////////// //
     
     func addEntry(_ entry: JournalEntry) {
         entries.append(entry)
@@ -34,40 +36,47 @@ class JournalStore: ObservableObject {
     }
     
     func updateEntry(_ old_entry_index: Int, _ new_entry: JournalEntry) {
-        entries[index] = entry
+        entries[old_entry_index] = new_entry
         saveEntries()
     }
     
     func deleteEntry(_ entry: JournalEntry) {
         entries.removeAll { $0.id == entry.id}
-        saveEtries()
+        saveEntries()
     }
     
-    // Private methods //
+    // ///////////////////////////////////// //
+    // /////////// Private methods ///////// //
+    // ///////////////////////////////////// //
     private func loadEntries() {
         guard let fileURL = fileURL else {
-            print("Could not find file URL!)
+            print("Could not find file URL!")
+            loadSampleData()
             return
         }
         
         guard fileManager.fileExists(atPath: fileURL.path) else {
             print("No saved entries found!")
+            loadSampleData()
             return
         }
         
         do {
             let data = try Data(contentsOf: fileURL)
             let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
             entries = try decoder.decode([JournalEntry].self, from: data)
             print("Successfully loaded \(entries.count) entries")
         } catch {
             print("Error loading entries: \(error.localizedDescription)")
+            loadSampleData()
         }
     }
     
     private func saveEntries() {
         guard let fileURL = fileURL else {
             print("Could not get file URL for saving")
+            loadSampleData()
             return
         }
         
@@ -80,7 +89,13 @@ class JournalStore: ObservableObject {
             try data.write(to: fileURL, options: .atomic)
             print("Successfully saved \(entries.count) entries to \(fileURL.path)")
         } catch {
-            print("Error savign entries: \(error.localizedDescription)")
+            print("Error saving entries: \(error.localizedDescription)")
+            loadSampleData()
         }
+    }
+    
+    private func loadSampleData() {
+        entries = JournalEntry.sampleEntries
+        saveEntries()
     }
 }

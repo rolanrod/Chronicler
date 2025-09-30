@@ -32,17 +32,17 @@ extension JournalEntry {
     static var sampleEntries: [JournalEntry] {
         [
             JournalEntry(
-                title: "My First Entry",
+                title: "TEST",
                 content: "Today was a great day.",
                 createdAt: Date().addingTimeInterval(-86400 * 2)
             ),
             JournalEntry(
-                title: "Thoughts on Swift",
+                title: "TEST TEST",
                 content: "I'm not sure if I like it yet.",
                 createdAt: Date().addingTimeInterval(-86400)
             ),
             JournalEntry(
-                title: "I Hope This is Fun!",
+                title: "TEST TEST TEST",
                 content: "I think it will be.",
                 createdAt: Date()
             ),
