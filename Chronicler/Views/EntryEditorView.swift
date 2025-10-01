@@ -8,7 +8,9 @@ import SwiftUI
 
 struct EntryEditorView: View {
     @EnvironmentObject var store: JournalStore
+    @Environment(\.dismiss) var dismiss
     let date: Date
+    
     @State private var title: String = ""
     @State private var content: String = ""
     @State private var existingEntry: JournalEntry?
@@ -21,52 +23,75 @@ struct EntryEditorView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Entry header
-            VStack(alignment: .leading, spacing: 4) {
-                Text(dateString)
-                    .font(.headline)
-                    .foregroundColor(.secondary)
-                
-                TextField("Entry title (optional)", text: $title)
-                    .font(.title2)
-                    .textFieldStyle(.plain)
-            }.padding()
+            Text(dateString)
+                .font(.title2)
+                .foregroundColor(.secondary)
+                .padding()
+            
+            TextField("Entry title", text: $title)
+                .font(.title)
+                .textFieldStyle(.plain)
+                .padding(.horizontal)
+                .padding(.bottom)
             
             Divider()
             
-            TextEditor(text: $content)
-                .font(.body)
-                .padding()
-                .scrollContentBackground(.hidden)
+            ZStack(alignment: .topLeading) {
+                if content.isEmpty {
+                    Text("")
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 16)
+                }
+                
+                TextEditor(text: $content)
+                    .font(.body)
+                    .scrollContentBackground(.hidden)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
+            }
             
             HStack {
                 if !content.isEmpty {
-                    Text("\(content.split { $0.isWhitespace }.count) words")
+                    Text("\(content.count) characters")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-                Spacer ()
+                
+                Spacer()
                 
                 if existingEntry != nil {
                     Text("Last saved: \(lastSavedString)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-            }.padding(.horizontal).padding(.bottom, 8)
-        }.background(Color(nsColor: .textBackgroundColor))
-            .onAppear() {
-                loadEntry()
             }
-            .onChange(of: date) {_, _ in
+            .padding(.horizontal)
+            .padding(.bottom, 8)
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigation) {
+                Button(action: {
                     saveCurrentEntry()
-                    loadEntry()
+                    dismiss()
+                }) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                        Text("Calendar")
+                    }
+                }
             }
-            .onChange(of: title) {_, _ in
-                    saveWithDebounce()
-            }
-            .onChange(of: content) {_, _ in
-                    saveWithDebounce()
-            }
+        }
+        .onAppear {
+            loadEntry()
+        }
+        .onChange(of: title) { _, _ in
+            saveWithDebounce()
+        }
+        .onChange(of: content) { _, _ in
+            saveWithDebounce()
+        }
     }
     
     private var lastSavedString: String {
@@ -89,7 +114,7 @@ struct EntryEditorView: View {
     }
     
     private func saveCurrentEntry() {
-        guard !title.isEmpty || !title.isEmpty else {
+        guard !content.isEmpty || !title.isEmpty else {
             if let entry = existingEntry {
                 store.deleteEntry(entry)
             }
@@ -114,6 +139,7 @@ struct EntryEditorView: View {
     }
     
     private func saveWithDebounce() {
+        // Debounce for discrete saving
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             saveCurrentEntry()
         }
@@ -121,7 +147,8 @@ struct EntryEditorView: View {
 }
 
 #Preview {
-    EntryEditorView(date: Date())
-        .environmentObject(JournalStore())
-        .frame(height: 400)
+    NavigationStack {
+        EntryEditorView(date: Date())
+            .environmentObject(JournalStore())
+    }
 }

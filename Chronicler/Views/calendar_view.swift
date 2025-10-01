@@ -10,7 +10,7 @@ import SwiftUI
 struct CalendarView: View {
     @EnvironmentObject var store: JournalStore
     @State private var currentMonth: Date = Date()
-    @State private var selectedDate: Date?
+//    @State private var selectedDate: Date?
     
     private let calendar = Calendar.current
     private let columns = Array(repeating: GridItem(.flexible()), count: 7)
@@ -45,34 +45,27 @@ struct CalendarView: View {
             LazyVGrid(columns: columns, spacing: 0) {
                 ForEach(daysInMonth, id: \.self) { date in
                     if let date = date {
-                        DayCell(
-                            date: date,
-                            isSelected: calendar.isDate(date, inSameDayAs: selectedDate ?? Date.distantPast),
-                            hasEntry: hasEntry(for: date),
-                            isToday: calendar.isDateInToday(date)
-                        )
-                        .onTapGesture {
-                            selectedDate = date
+                        NavigationLink(value: date) {
+                            DayCell(
+                                date: date,
+                                isSelected: false,
+                                hasEntry: hasEntry(for: date),
+                                isToday: calendar.isDateInToday(date)
+                            )
                         }
+                        .buttonStyle(.plain)
                     } else {
+                        // Padding
                         Color.clear
                             .aspectRatio(1, contentMode: .fit)
                     }
                 }
             }
-            
-            Divider().padding(.top)
-            
-            if let selectedDate = selectedDate {
-                EntryEditorView(date: selectedDate).environmentObject(store)
-            } else {
-                VStack {
-                    Spacer()
-                    Text("Select a day to write or view journal entry")
-                    Spacer()
-                }
-            }
+            Spacer()
         }
+        .navigationDestination(for: Date.self) { date in
+            EntryEditorView(date: date).environmentObject(store)
+        }.navigationTitle("Chronicler").frame(minWidth: 800, minHeight: 600)
     }
     
     private func previousMonth() {

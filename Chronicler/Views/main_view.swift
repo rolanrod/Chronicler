@@ -10,8 +10,10 @@ struct MainView: View {
     @EnvironmentObject var store: JournalStore
     
     var body: some View {
-        CalendarView()
-            .environmentObject(store)
+        NavigationStack {
+            CalendarView()
+                .environmentObject(store)
+        }
     }
 }
 
