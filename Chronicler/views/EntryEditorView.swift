@@ -22,52 +22,58 @@ struct EntryEditorView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text(dateString)
-                .font(.title2)
-                .foregroundColor(.secondary)
-                .padding()
-            
-            TextField("Entry title", text: $title)
-                .font(.title)
-                .textFieldStyle(.plain)
+        GeometryReader { geometry in
+            VStack(alignment: .leading, spacing: 0) {
+                Text(dateString)
+                    .font(Theme.Fonts.entryDate)
+                    .foregroundColor(Theme.Colors.secondaryText)
+                    .padding()
+                
+                TextField("Entry title", text: $title)
+                    .font(Theme.Fonts.entryTitle)
+                    .textFieldStyle(.plain)
+                    .padding(.horizontal)
+                    .padding(.bottom)
+                
+                Divider()
+                
+                ScrollView {
+                    ZStack(alignment: .topLeading) {
+                        if content.isEmpty {
+                            Text("")
+                                .foregroundColor(.secondary)
+                                .padding(20)
+                        }
+                        
+                        TextEditor(text: $content)
+                            .font(Theme.Fonts.entryContent)
+                            .scrollContentBackground(.hidden)
+                            .padding(.horizontal, Theme.Spacing.editorPadding)
+                            .padding(.top, 12)
+                            .frame(minHeight: max(geometry.size.height - 200, 300))
+                    }
+                }
+                
+                Divider()
+                
+                HStack {
+                    if !content.isEmpty {
+                        Text("\(content.count) characters")
+                            .font(Theme.Fonts.statusBar)
+                            .foregroundColor(Theme.Colors.secondaryText)
+                    }
+                    
+                    Spacer()
+                    
+                    if existingEntry != nil {
+                        Text("Last saved: \(lastSavedString)")
+                            .font(Theme.Fonts.statusBar)
+                            .foregroundColor(Theme.Colors.secondaryText)
+                    }
+                }
                 .padding(.horizontal)
-                .padding(.bottom)
-            
-            Divider()
-            
-            ZStack(alignment: .topLeading) {
-                if content.isEmpty {
-                    Text("")
-                        .foregroundColor(.secondary)
-                        .padding(.horizontal, 20)
-                        .padding(.top, 16)
-                }
-                
-                TextEditor(text: $content)
-                    .font(.body)
-                    .scrollContentBackground(.hidden)
-                    .padding(.horizontal, 16)
-                    .padding(.top, 8)
+                .padding(.vertical, 8)
             }
-            
-            HStack {
-                if !content.isEmpty {
-                    Text("\(content.count) characters")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
-                Spacer()
-                
-                if existingEntry != nil {
-                    Text("Last saved: \(lastSavedString)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            .padding(.horizontal)
-            .padding(.bottom, 8)
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {

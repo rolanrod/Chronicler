@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A99661762E8E0FC200D66512 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99661752E8E0FBF00D66512 /* Theme.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		A99661232E8B653200D66512 /* Chronicler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chronicler.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A99661752E8E0FBF00D66512 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +37,7 @@
 		A996611A2E8B653200D66512 = {
 			isa = PBXGroup;
 			children = (
+				A99661752E8E0FBF00D66512 /* Theme.swift */,
 				A99661252E8B653200D66512 /* Chronicler */,
 				A99661242E8B653200D66512 /* Products */,
 			);
@@ -119,6 +125,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A99661762E8E0FC200D66512 /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

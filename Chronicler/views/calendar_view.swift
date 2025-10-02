@@ -10,62 +10,72 @@ import SwiftUI
 struct CalendarView: View {
     @EnvironmentObject var store: JournalStore
     @State private var currentMonth: Date = Date()
-//    @State private var selectedDate: Date?
     
-    private let calendar = Calendar.current
-    private let columns = Array(repeating: GridItem(.flexible()), count: 7)
+    private let calendar: Calendar = Calendar.current
+    private let columns: Array = Array(repeating: GridItem(.flexible(), spacing: Theme.Spacing.calendarGridSpacing), count: 7)
     
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                Button(action: previousMonth) {
-                    Image(systemName: "chevron.left")
-                }
-                Spacer()
-                Text(monthYearString).font(.title2).fontWeight(.semibold)
-                Spacer()
-                Button(action: nextMonth) {
-                    Image(systemName: "chevron.right")
-                }
-            }.padding()
-            
-            Divider()
-            
-            HStack(spacing: 0) {
-                ForEach(weekdaySymbols, id: \.self) { symbol in
-                    Text(symbol)
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                        .foregroundColor(.secondary)
-                        .frame(maxWidth: .infinity)
-                }
-            }
-            .padding(.vertical, 8)
-            
-            LazyVGrid(columns: columns, spacing: 0) {
-                ForEach(daysInMonth, id: \.self) { date in
-                    if let date = date {
-                        NavigationLink(value: date) {
-                            DayCell(
-                                date: date,
-                                isSelected: false,
-                                hasEntry: hasEntry(for: date),
-                                isToday: calendar.isDateInToday(date)
-                            )
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(spacing: 0) {
+                    HStack {
+                        Button(action: previousMonth) {
+                            Image(systemName: "chevron.left").font(Theme.Fonts.monthTitle)
+                        }.buttonStyle(.plain)
+                        Spacer()
+                        Text(monthYearString).font(.title2).fontWeight(.semibold)
+                        Spacer()
+                        Button(action: nextMonth) {
+                            Image(systemName: "chevron.right").font(.title2)
+                        }.buttonStyle(.plain)
+                    }.padding(.horizontal).padding(.vertical, 12)
+                    
+                    Divider()
+                    
+                    LazyVGrid(columns: columns, spacing: 8) {
+                        ForEach(weekdaySymbols, id: \.self) { symbol in
+                                Text(symbol)
+                                .font(Theme.Fonts.weekdayHeader)
+                                .fontWeight(.semibold)
+                                .foregroundColor(Theme.Colors.secondaryText)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .aspectRatio(1, contentMode: .fit)
                         }
-                        .buttonStyle(.plain)
-                    } else {
-                        // Padding
-                        Color.clear
-                            .aspectRatio(1, contentMode: .fit)
                     }
+                    .padding(.horizontal)
+                    .frame(maxWidth: min(geometry.size.width * 0.9, Theme.Sizes.maxCalendarWidth))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 6)
+                    
+                    LazyVGrid(columns: columns, spacing: Theme.Spacing.calendarGridSpacing) {
+                        ForEach(daysInMonth, id: \.self) { date in
+                            if let date = date {
+                                NavigationLink(value: date) {
+                                    DayCell(
+                                        date: date,
+                                        isSelected: false,
+                                        hasEntry: hasEntry(for: date),
+                                        isToday: calendar.isDateInToday(date)
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                            } else {
+                                Color.clear
+                                    .aspectRatio(1, contentMode: .fit)
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                    .frame(maxWidth: min(geometry.size.width * 0.9, Theme.Sizes.maxCalendarWidth))
+                    .frame(maxWidth: .infinity)
+                    
+                    Spacer()
                 }
             }
-            Spacer()
         }
         .navigationDestination(for: Date.self) { date in
             EntryEditorView(date: date).environmentObject(store)
-        }.navigationTitle("Chronicler").frame(minWidth: 800, minHeight: 600)
+        }.navigationTitle("Chronicler").frame(minWidth: Theme.Sizes.minWindowWidth, minHeight: Theme.Sizes.minWindowHeight)
     }
     
     private func previousMonth() {
@@ -86,9 +96,7 @@ struct CalendarView: View {
         return formatter.string(from: currentMonth)
     }
     
-    private var weekdaySymbols: [String] {
-        calendar.veryShortWeekdaySymbols
-    }
+    private var weekdaySymbols: [String] { calendar.shortWeekdaySymbols }
     
     private var daysInMonth: [Date?] {
         guard let monthInterval = calendar.dateInterval(of: .month, for: currentMonth),
@@ -130,27 +138,32 @@ struct DayCell: View {
     }
     
     var body: some View {
-        VStack {
-            Text(dayNumber)
-                .font(.body)
-                .fontWeight(isToday ? .bold : .regular)
-                .foregroundColor(isSelected ? .white : (isToday ? .blue : .primary))
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .aspectRatio(1, contentMode: .fit)
-                .background(
-                    Circle().fill(isSelected ? Color.blue : Color.clear)
-                )
-                .overlay(
+        ZStack {
+            RoundedRectangle(cornerRadius: Theme.Spacing.dayCellCornerRadius)
+                .fill(Theme.Colors.dayCellBackground)
+            
+            VStack(spacing: 4) {
+                Text(dayNumber)
+                    .font(Theme.Fonts.dayNumber)
+                    .fontWeight(isToday ? .bold : .medium)
+                    .foregroundColor(isToday ? Theme.Colors.todayAccent : Theme.Colors.primaryText)
+                if hasEntry {
                     Circle()
-                    .strokeBorder(isToday && !isSelected ? Color.blue : Color.clear, lineWidth: 2)
-                )
-                .overlay(
+                        .fill(Theme.Colors.entryIndicator)
+                        .frame(width: Theme.Sizes.entryDotSize, height: Theme.Sizes.entryDotSize)                } else {
                     Circle()
-                        .fill(hasEntry && !isSelected ? Color.green : Color.clear)
-                        .frame(width: 6, height: 6)
-                        .offset(y: 20)
-                )
-        }.padding(4)
+                        .fill(Color.clear)
+                        .frame(width: Theme.Sizes.entryDotSize, height: Theme.Sizes.entryDotSize)
+                }
+            }
+            .padding(Theme.Spacing.dayCellPadding)
+            
+            if isToday {
+                RoundedRectangle(cornerRadius: Theme.Spacing.dayCellCornerRadius)
+                    .strokeBorder(Theme.Colors.todayAccent, lineWidth: Theme.Sizes.todayBorderWidth)
+            }
+        }
+        .aspectRatio(1, contentMode: .fit)
     }
 }
 
