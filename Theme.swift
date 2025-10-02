@@ -10,9 +10,15 @@ import SwiftUI
 struct Theme {
     struct Colors {
         // Calendar colors
-        static let calendarBackround = Color(nsColor: .windowBackgroundColor)
-        static let dayCellBackground = Color(nsColor: .controlBackgroundColor)
-        static let todayAccent = Color.blue
+        static let calendarBackground = LinearGradient(
+            colors: [Color(hex: "513B56"), Color(hex: "8D6B94")],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        
+        static let weekdayBackground = Color(nsColor: .controlBackgroundColor)
+        static let weekendBackground = Color(hex: "424242")
+        static let todayAccent = Color.white
         static let entryIndicator = Color.green
         
         // Text colors
@@ -24,16 +30,22 @@ struct Theme {
     }
     
     struct Fonts {
+        // Base font styles
+        private static let serifDesign: Font.Design = .serif
+        private static let roundedDesign: Font.Design = .rounded
+        private static let defaultDesign: Font.Design = .default
+        
         // Calendar fonts
-        static let monthTitle = Font.system(.title, design: .rounded).weight(.semibold)
-        static let weekdayHeader = Font.subheadline.weight(.semibold)
-        static let dayNumber = Font.system(.body, design: .rounded)
+        static let monthTitle = Font.system(.title, design: .serif).weight(.semibold)
+        static let weekdayHeader = Font.system(.subheadline, design: .serif).weight(.semibold)
+        static let dayNumber = Font.system(.body, design: .serif)
         
         // Editor fonts
-        static let entryDate = Font.title2
-        static let entryTitle = Font.system(.title, design: .rounded)
-        static let entryContent = Font.body
-        static let statusBar = Font.caption
+        static let entryDate = Font.system(.title2, design: serifDesign)
+        static let entryTitle = Font.system(.title, design: serifDesign)
+        static let entryContent = Font.system(.body, design: serifDesign)
+        static let statusBar = Font.system(.caption, design: defaultDesign)
+
     }
     
     struct Spacing {

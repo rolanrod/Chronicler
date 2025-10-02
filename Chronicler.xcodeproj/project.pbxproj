@@ -8,11 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		A99661762E8E0FC200D66512 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99661752E8E0FBF00D66512 /* Theme.swift */; };
+		A99661782E8E14C500D66512 /* to_hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A99661772E8E14BD00D66512 /* to_hex.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		A99661232E8B653200D66512 /* Chronicler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chronicler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A99661752E8E0FBF00D66512 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		A99661772E8E14BD00D66512 /* to_hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = to_hex.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -37,9 +39,10 @@
 		A996611A2E8B653200D66512 = {
 			isa = PBXGroup;
 			children = (
-				A99661752E8E0FBF00D66512 /* Theme.swift */,
+				A99661772E8E14BD00D66512 /* to_hex.swift */,
 				A99661252E8B653200D66512 /* Chronicler */,
 				A99661242E8B653200D66512 /* Products */,
+				A99661752E8E0FBF00D66512 /* Theme.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -126,6 +129,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A99661762E8E0FC200D66512 /* Theme.swift in Sources */,
+				A99661782E8E14C500D66512 /* to_hex.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

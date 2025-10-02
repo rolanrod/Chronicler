@@ -20,10 +20,10 @@ struct CalendarView: View {
                 VStack(spacing: 0) {
                     HStack {
                         Button(action: previousMonth) {
-                            Image(systemName: "chevron.left").font(Theme.Fonts.monthTitle)
+                            Image(systemName: "chevron.left").font(.title2)
                         }.buttonStyle(.plain)
                         Spacer()
-                        Text(monthYearString).font(.title2).fontWeight(.semibold)
+                        Text(monthYearString).font(Theme.Fonts.monthTitle).fontWeight(.semibold)
                         Spacer()
                         Button(action: nextMonth) {
                             Image(systemName: "chevron.right").font(.title2)
@@ -55,7 +55,8 @@ struct CalendarView: View {
                                         date: date,
                                         isSelected: false,
                                         hasEntry: hasEntry(for: date),
-                                        isToday: calendar.isDateInToday(date)
+                                        isToday: calendar.isDateInToday(date),
+                                        isWeekend: calendar.isDateInWeekend(date)
                                     )
                                 }
                                 .buttonStyle(.plain)
@@ -71,7 +72,7 @@ struct CalendarView: View {
                     
                     Spacer()
                 }
-            }
+            }.background(Theme.Colors.calendarBackground)
         }
         .navigationDestination(for: Date.self) { date in
             EntryEditorView(date: date).environmentObject(store)
@@ -130,6 +131,7 @@ struct DayCell: View {
     let isSelected: Bool
     let hasEntry: Bool
     let isToday: Bool
+    let isWeekend: Bool
     
     private var dayNumber: String {
         let formatter = DateFormatter()
@@ -140,7 +142,7 @@ struct DayCell: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: Theme.Spacing.dayCellCornerRadius)
-                .fill(Theme.Colors.dayCellBackground)
+                .fill(isWeekend ? Theme.Colors.weekendBackground : Theme.Colors.weekdayBackground)
             
             VStack(spacing: 4) {
                 Text(dayNumber)
