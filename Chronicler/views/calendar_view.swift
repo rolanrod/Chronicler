@@ -10,47 +10,49 @@ import SwiftUI
 struct CalendarView: View {
     @EnvironmentObject var store: JournalStore
     @State private var currentMonth: Date = Date()
+    @State private var selectedDate: Date?
+    @State private var showingEditor = false
     
     private let calendar: Calendar = Calendar.current
     private let columns: Array = Array(repeating: GridItem(.flexible(), spacing: Theme.Spacing.calendarGridSpacing), count: 7)
     
     var body: some View {
         GeometryReader { geometry in
-            ScrollView {
-                VStack(spacing: 0) {
-                    HStack {
-                        Button(action: previousMonth) {
-                            Image(systemName: "chevron.left").font(.title2)
-                        }.buttonStyle(.plain)
-                        Spacer()
-                        Text(monthYearString).font(Theme.Fonts.monthTitle).fontWeight(.semibold)
-                        Spacer()
-                        Button(action: nextMonth) {
-                            Image(systemName: "chevron.right").font(.title2)
-                        }.buttonStyle(.plain)
-                    }.padding(.horizontal).padding(.vertical, 12)
-                    
-                    Divider()
-                    
-                    LazyVGrid(columns: columns, spacing: 8) {
-                        ForEach(weekdaySymbols, id: \.self) { symbol in
+            if !showingEditor {
+                ScrollView {
+                    VStack(spacing: 0) {
+                        HStack {
+                            Button(action: previousMonth) {
+                                Image(systemName: "chevron.left").font(.title2)
+                            }.buttonStyle(.plain)
+                            Spacer()
+                            Text(monthYearString).font(Theme.Fonts.monthTitle).fontWeight(.semibold)
+                            Spacer()
+                            Button(action: nextMonth) {
+                                Image(systemName: "chevron.right").font(.title2)
+                            }.buttonStyle(.plain)
+                        }.padding(.horizontal).padding(.vertical, 12)
+                        
+                        Divider()
+                        
+                        LazyVGrid(columns: columns, spacing: 8) {
+                            ForEach(weekdaySymbols, id: \.self) { symbol in
                                 Text(symbol)
-                                .font(Theme.Fonts.weekdayHeader)
-                                .fontWeight(.semibold)
-                                .foregroundColor(Theme.Colors.secondaryText)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .aspectRatio(1, contentMode: .fit)
+                                    .font(Theme.Fonts.weekdayHeader)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(Theme.Colors.secondaryText)
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .aspectRatio(1, contentMode: .fit)
+                            }
                         }
-                    }
-                    .padding(.horizontal)
-                    .frame(maxWidth: min(geometry.size.width * 0.9, Theme.Sizes.maxCalendarWidth))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 6)
-                    
-                    LazyVGrid(columns: columns, spacing: Theme.Spacing.calendarGridSpacing) {
-                        ForEach(daysInMonth, id: \.self) { date in
-                            if let date = date {
-                                NavigationLink(value: date) {
+                        .padding(.horizontal)
+                        .frame(maxWidth: min(geometry.size.width * 0.9, Theme.Sizes.maxCalendarWidth))
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 6)
+                        
+                        LazyVGrid(columns: columns, spacing: Theme.Spacing.calendarGridSpacing) {
+                            ForEach(daysInMonth, id: \.self) { date in
+                                if let date = date {
                                     DayCell(
                                         date: date,
                                         isSelected: false,
@@ -58,25 +60,41 @@ struct CalendarView: View {
                                         isToday: calendar.isDateInToday(date),
                                         isWeekend: calendar.isDateInWeekend(date)
                                     )
+                                    .onTapGesture {
+                                        selectedDate = date
+                                        withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                                            showingEditor = true
+                                        }
+                                    }
+                                } else {
+                                    Color.clear
+                                        .aspectRatio(1, contentMode: .fit)
                                 }
-                                .buttonStyle(.plain)
-                            } else {
-                                Color.clear
-                                    .aspectRatio(1, contentMode: .fit)
                             }
                         }
+                        .padding(.horizontal)
+                        .frame(maxWidth: min(geometry.size.width * 0.9, Theme.Sizes.maxCalendarWidth))
+                        .frame(maxWidth: .infinity)
+                        
+                        Spacer()
                     }
-                    .padding(.horizontal)
-                    .frame(maxWidth: min(geometry.size.width * 0.9, Theme.Sizes.maxCalendarWidth))
-                    .frame(maxWidth: .infinity)
-                    
-                    Spacer()
-                }
-            }.background(Theme.Colors.calendarBackground)
+                }.background(Theme.Colors.calendarBackground)
+            }
         }
-        .navigationDestination(for: Date.self) { date in
-            EntryEditorView(date: date).environmentObject(store)
-        }.navigationTitle("Chronicler").frame(minWidth: Theme.Sizes.minWindowWidth, minHeight: Theme.Sizes.minWindowHeight)
+        .overlay {
+            if showingEditor, let date = selectedDate {
+                EntryEditorView(date: date, onDismiss: {
+                    withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
+                        showingEditor = false
+                    }
+                })
+                .environmentObject(store)
+                .transition(.asymmetric(
+                    insertion: .scale(scale: 0.9, anchor: .center).combined(with: .opacity),
+                    removal: .scale(scale: 0.9, anchor: .center).combined(with: .opacity)
+                ))
+            }
+        }.frame(minWidth: Theme.Sizes.minWindowWidth, minHeight: Theme.Sizes.minWindowHeight)
     }
     
     private func previousMonth() {
@@ -133,6 +151,8 @@ struct DayCell: View {
     let isToday: Bool
     let isWeekend: Bool
     
+    @State private var isPressed = false;
+    
     private var dayNumber: String {
         let formatter = DateFormatter()
         formatter.dateFormat = "d"
@@ -143,19 +163,24 @@ struct DayCell: View {
         ZStack {
             RoundedRectangle(cornerRadius: Theme.Spacing.dayCellCornerRadius)
                 .fill(isWeekend ? Theme.Colors.weekendBackground : Theme.Colors.weekdayBackground)
+                .shadow(color: Color.black.opacity(isPressed ? 0.2 : 0.05), radius: isPressed ? 8 : 2, y : isPressed ? 4 : 1)
             
-            VStack(spacing: 4) {
+            ZStack {
                 Text(dayNumber)
-                    .font(Theme.Fonts.dayNumber)
-                    .fontWeight(isToday ? .bold : .medium)
+                    .font(.system(size: 24, weight: isToday ? .bold : .medium, design: .serif))
                     .foregroundColor(isToday ? Theme.Colors.todayAccent : Theme.Colors.primaryText)
+
                 if hasEntry {
-                    Circle()
-                        .fill(Theme.Colors.entryIndicator)
-                        .frame(width: Theme.Sizes.entryDotSize, height: Theme.Sizes.entryDotSize)                } else {
-                    Circle()
-                        .fill(Color.clear)
-                        .frame(width: Theme.Sizes.entryDotSize, height: Theme.Sizes.entryDotSize)
+                    VStack {
+                        HStack {
+                            Spacer()
+                            Image(systemName: "bookmark.fill")
+                                .font(.system(size: 18))
+                                .foregroundColor(Theme.Colors.entryIndicator)
+                                .padding(-4)
+                        }
+                        Spacer()
+                    }
                 }
             }
             .padding(Theme.Spacing.dayCellPadding)
@@ -166,6 +191,14 @@ struct DayCell: View {
             }
         }
         .aspectRatio(1, contentMode: .fit)
+    }
+}
+
+struct ScaleButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }
 

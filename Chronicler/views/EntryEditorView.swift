@@ -8,8 +8,8 @@ import SwiftUI
 
 struct EntryEditorView: View {
     @EnvironmentObject var store: JournalStore
-    @Environment(\.dismiss) var dismiss
     let date: Date
+    let onDismiss: () -> Void
     
     @State private var title: String = ""
     @State private var content: String = ""
@@ -75,12 +75,13 @@ struct EntryEditorView: View {
                 .padding(.vertical, 8)
             }
         }
+        .navigationTitle("")
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .navigation) {
                 Button(action: {
                     saveCurrentEntry()
-                    dismiss()
+                    onDismiss()
                 }) {
                     HStack(spacing: 4) {
                         Image(systemName: "chevron.left")
@@ -154,7 +155,7 @@ struct EntryEditorView: View {
 
 #Preview {
     NavigationStack {
-        EntryEditorView(date: Date())
+        EntryEditorView(date: Date(), onDismiss: {})
             .environmentObject(JournalStore())
     }
 }

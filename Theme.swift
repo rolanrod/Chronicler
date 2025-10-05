@@ -19,7 +19,7 @@ struct Theme {
         static let weekdayBackground = Color(nsColor: .controlBackgroundColor)
         static let weekendBackground = Color(hex: "424242")
         static let todayAccent = Color.white
-        static let entryIndicator = Color.green
+        static let entryIndicator = Color(hex: "8D6B94")
         
         // Text colors
         static let primaryText = Color.primary
