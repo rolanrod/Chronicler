@@ -12,9 +12,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A99661232E8B653200D66512 /* Chronicler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Chronicler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A99661752E8E0FBF00D66512 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		A99661772E8E14BD00D66512 /* to_hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = to_hex.swift; sourceTree = "<group>"; };
+		A9BA06CD2E957EC90046361F /* Chronicler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = Chronicler.app; path = /Users/rolando/cs/chronicler/build/Debug/Chronicler.app; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -49,7 +49,6 @@
 		A99661242E8B653200D66512 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A99661232E8B653200D66512 /* Chronicler.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -76,7 +75,7 @@
 			packageProductDependencies = (
 			);
 			productName = Chronicler;
-			productReference = A99661232E8B653200D66512 /* Chronicler.app */;
+			productReference = A9BA06CD2E957EC90046361F /* Chronicler.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
