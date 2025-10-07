@@ -1,6 +1,6 @@
 # Chronicler
 
-
+![Chronicler Logo][Chronicler/Assets.xcassets/AppIcon.appiconset/chronicler_logo.png]
 
 Chronicler is a journaling macOS app I made for myself out of a little bit of frustration with Apple for not releasing a version of the iOS Journal app for its computers. Avid journalers should not have to use VSCode or Pages (yuck!)
 for their entries. This quick project was also a fun way to do interesting UI work again, this time in Swfit.
