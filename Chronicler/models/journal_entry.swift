@@ -6,19 +6,22 @@
 //
 
 import Foundation
+import AppKit
 
 struct JournalEntry: Identifiable, Codable, Equatable {
     let id: UUID
     var title: String
     var content: String
+    var attributedContent: Data?
     var createdAt: Date
     var modifiedAt: Date
     
-    init(id: UUID = UUID(), title: String="", content: String="",
+    init(id: UUID = UUID(), title: String="", content: String="", attributedContent: Data? = nil,
          createdAt: Date=Date(), modifiedAt: Date=Date()) {
         self.id = id
         self.title = title
         self.content = content
+        self.attributedContent = attributedContent
         self.createdAt = createdAt
         self.modifiedAt = modifiedAt
     }

@@ -170,7 +170,7 @@ struct DayCell: View {
                     .foregroundColor(
                         isToday ? Theme.Colors.todayAccent :
                         !isInCurrentMonth ? Theme.Colors.secondaryText.opacity(0.4) :
-                        (isWeekend ? Theme.Colors.secondaryText : Theme.Colors.primaryText)
+                        Theme.Colors.primaryText
                     )
                 
                 if hasEntry {

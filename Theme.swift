@@ -20,6 +20,7 @@ struct Theme {
         static let weekendBackground = Color(hex: "424242")
         static let todayAccent = Color.white
         static let entryIndicator = Color(hex: "8D6B94")
+        static let buttonAccent = Color(hex: "8D6B94")
         
         // Text colors
         static let primaryText = Color.primary
