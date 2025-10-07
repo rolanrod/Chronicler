@@ -39,6 +39,7 @@ struct EntryEditorView: View {
                 TextField("Entry title", text: $title)
                     .font(Theme.Fonts.entryTitle)
                     .textFieldStyle(.plain)
+                    .tint(Color(red: 141/255, green: 107/255, blue: 148/255))
                     .padding(.horizontal)
                     .padding(.bottom)
 

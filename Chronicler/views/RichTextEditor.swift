@@ -27,6 +27,7 @@ struct RichTextEditor: NSViewRepresentable {
         textView.isAutomaticQuoteSubstitutionEnabled = false
         textView.isAutomaticDashSubstitutionEnabled = false
         textView.font = NSFont(name: "Palatino", size: fontSize) ?? NSFont.systemFont(ofSize: fontSize)
+        textView.insertionPointColor = NSColor(red: 141/255, green: 107/255, blue: 148/255, alpha: 1.0)
 
         textView.textStorage?.setAttributedString(attributedText)
 

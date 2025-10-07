@@ -91,7 +91,7 @@ struct CalendarView: View {
                     removal: .scale(scale: 0.9, anchor: .center).combined(with: .opacity)
                 ))
             }
-        }.frame(minWidth: Theme.Sizes.minWindowWidth, minHeight: Theme.Sizes.minWindowHeight)
+        }.frame(minWidth: Theme.Sizes.minWindowWidth, minHeight: Theme.Sizes.minWindowHeight, maxHeight: 800)
     }
     
     private func previousMonth() {
@@ -207,5 +207,5 @@ struct ScaleButtonStyle: ButtonStyle {
 #Preview {
     CalendarView()
         .environmentObject(JournalStore())
-        .frame(width: 900, height: 700)
+        .frame(width: 650, height: 700)
 }
