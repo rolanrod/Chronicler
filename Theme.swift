@@ -37,8 +37,8 @@ struct Theme {
         
         // Calendar fonts
         static let monthTitle = Font.system(.title, design: .serif).weight(.semibold)
-        static let weekdayHeader = Font.system(.subheadline, design: .serif).weight(.semibold)
-        static let dayNumber = Font.system(.body, design: .serif)
+        static let weekdayHeader = Font.system(.title2, design: .serif).weight(.bold)
+        static let dayNumber = Font.system(.title, design: .serif)
         
         // Editor fonts
         static let entryDate = Font.system(.title2, design: serifDesign)
@@ -50,17 +50,16 @@ struct Theme {
     
     struct Spacing {
         // Calendar spacings
-        static let calendarGridSpacing: CGFloat = 8
+        static let calendarGridSpacing: CGFloat = 0
         static let calendarPadding: CGFloat = 12
         static let dayCellPadding: CGFloat = 8
-        static let dayCellCornerRadius: CGFloat = 8
+        static let dayCellCornerRadius: CGFloat = 0
         
         // Editor spacings
         static let editorPadding: CGFloat = 16
     }
     
     struct Sizes {
-        static let entryDotSize: CGFloat = 5
         static let todayBorderWidth: CGFloat = 2
         static let maxCalendarWidth: CGFloat = 800
         static let minWindowWidth: CGFloat = 600

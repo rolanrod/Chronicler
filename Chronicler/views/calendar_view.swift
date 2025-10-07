@@ -35,19 +35,16 @@ struct CalendarView: View {
                         
                         Divider()
                         
-                        LazyVGrid(columns: columns, spacing: 8) {
+                        LazyVGrid(columns: columns, spacing: 0) {
                             ForEach(weekdaySymbols, id: \.self) { symbol in
                                 Text(symbol)
                                     .font(Theme.Fonts.weekdayHeader)
                                     .fontWeight(.semibold)
                                     .foregroundColor(Theme.Colors.secondaryText)
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .aspectRatio(1, contentMode: .fit)
+                                    .frame(height: 50)
                             }
                         }
                         .padding(.horizontal)
-                        .frame(maxWidth: min(geometry.size.width * 0.9, Theme.Sizes.maxCalendarWidth))
-                        .frame(maxWidth: .infinity)
                         .padding(.vertical, 6)
                         
                         LazyVGrid(columns: columns, spacing: Theme.Spacing.calendarGridSpacing) {
@@ -58,8 +55,10 @@ struct CalendarView: View {
                                         isSelected: false,
                                         hasEntry: hasEntry(for: date),
                                         isToday: calendar.isDateInToday(date),
-                                        isWeekend: calendar.isDateInWeekend(date)
+                                        isWeekend: calendar.isDateInWeekend(date),
+                                        isInCurrentMonth: calendar.isDate(date, equalTo: currentMonth, toGranularity: .month)
                                     )
+                                    .frame(height: 80)
                                     .onTapGesture {
                                         selectedDate = date
                                         withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
@@ -68,13 +67,11 @@ struct CalendarView: View {
                                     }
                                 } else {
                                     Color.clear
-                                        .aspectRatio(1, contentMode: .fit)
+                                        .frame(height: 100)
                                 }
                             }
                         }
                         .padding(.horizontal)
-                        .frame(maxWidth: min(geometry.size.width * 0.9, Theme.Sizes.maxCalendarWidth))
-                        .frame(maxWidth: .infinity)
                         
                         Spacer()
                     }
@@ -127,11 +124,7 @@ struct CalendarView: View {
         var currentDate = monthFirstWeek.start
         
         for _ in 0..<42 {
-            if calendar.isDate(currentDate, equalTo: currentMonth, toGranularity: .month) {
-                days.append(currentDate)
-            } else {
-                days.append(nil)
-            }
+            days.append(currentDate)
             currentDate = calendar.date(byAdding: .day, value: 1, to: currentDate)!
         }
         
@@ -150,6 +143,7 @@ struct DayCell: View {
     let hasEntry: Bool
     let isToday: Bool
     let isWeekend: Bool
+    let isInCurrentMonth: Bool
     
     @State private var isPressed = false;
     
@@ -163,13 +157,22 @@ struct DayCell: View {
         ZStack {
             RoundedRectangle(cornerRadius: Theme.Spacing.dayCellCornerRadius)
                 .fill(isWeekend ? Theme.Colors.weekendBackground : Theme.Colors.weekdayBackground)
-                .shadow(color: Color.black.opacity(isPressed ? 0.2 : 0.05), radius: isPressed ? 8 : 2, y : isPressed ? 4 : 1)
+                .overlay(
+                    Rectangle()
+                        .strokeBorder(Color.gray.opacity(0.2), lineWidth: 0.5)
+                )
             
             ZStack {
                 Text(dayNumber)
-                    .font(.system(size: 24, weight: isToday ? .bold : .medium, design: .serif))
-                    .foregroundColor(isToday ? Theme.Colors.todayAccent : Theme.Colors.primaryText)
-
+                    .font(.system(.title2, design: .serif))
+                    .minimumScaleFactor(0.5)
+                    .lineLimit(1)
+                    .foregroundColor(
+                        isToday ? Theme.Colors.todayAccent :
+                        !isInCurrentMonth ? Theme.Colors.secondaryText.opacity(0.4) :
+                        (isWeekend ? Theme.Colors.secondaryText : Theme.Colors.primaryText)
+                    )
+                
                 if hasEntry {
                     VStack {
                         HStack {
@@ -190,7 +193,6 @@ struct DayCell: View {
                     .strokeBorder(Theme.Colors.todayAccent, lineWidth: Theme.Sizes.todayBorderWidth)
             }
         }
-        .aspectRatio(1, contentMode: .fit)
     }
 }
 
