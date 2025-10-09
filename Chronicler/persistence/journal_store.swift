@@ -56,22 +56,29 @@ class JournalStore: ObservableObject {
             loadSampleData()
             return
         }
-        
+
         guard fileManager.fileExists(atPath: fileURL.path) else {
             print("No saved entries found!")
             loadSampleData()
             return
         }
-        
+
         do {
             let data = try Data(contentsOf: fileURL)
+
+            // Create a backup before attempting to decode
+            let backupURL = fileURL.deletingPathExtension().appendingPathExtension("backup.json")
+            try? data.write(to: backupURL, options: .atomic)
+
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
             entries = try decoder.decode([JournalEntry].self, from: data)
             print("Successfully loaded \(entries.count) entries")
         } catch {
             print("Error loading entries: \(error.localizedDescription)")
-            loadSampleData()
+            print("WARNING: Failed to decode entries. Check journal_entries.backup.json for your data!")
+            // Don't automatically overwrite with sample data - let the user fix the issue
+            entries = []
         }
     }
     
@@ -97,7 +104,6 @@ class JournalStore: ObservableObject {
     }
     
     private func loadSampleData() {
-        entries = JournalEntry.sampleEntries
         saveEntries()
     }
 }

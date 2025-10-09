@@ -44,6 +44,7 @@ struct Theme {
         // Editor fonts
         static let entryDate = Font.system(.title2, design: serifDesign)
         static let entryTitle = Font.system(.title, design: serifDesign)
+        static let entrySong = Font.system(.title3, design: serifDesign)
         static let entryContent = Font.system(.body, design: serifDesign)
         static let statusBar = Font.system(.caption, design: defaultDesign)
 

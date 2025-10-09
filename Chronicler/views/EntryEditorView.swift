@@ -13,6 +13,7 @@ struct EntryEditorView: View {
     let onDismiss: () -> Void
 
     @State private var title: String = ""
+    @State private var song: String = ""
     @State private var attributedContent: NSAttributedString = NSAttributedString(string: "")
     @State private var existingEntry: JournalEntry?
     @State private var fontSize: CGFloat = 16
@@ -42,7 +43,14 @@ struct EntryEditorView: View {
                     .tint(Color(red: 141/255, green: 107/255, blue: 148/255))
                     .padding(.horizontal)
                     .padding(.bottom)
-
+                
+                TextField("Song I'm listening to", text: $song)
+                    .font(Theme.Fonts.entrySong)
+                    .textFieldStyle(.plain)
+                    .tint(Color(red: 141/255, green: 107/255, blue: 148/255))
+                    .padding(.horizontal)
+                    .padding(.bottom)
+                    
                 HStack(spacing: 12) {
                     Button(action: {
                         fontSize = max(fontSize - 2, 10)
@@ -163,6 +171,9 @@ struct EntryEditorView: View {
         }
         .onChange(of: title) { _, _ in
             saveWithDebounce()
+        }
+        .onChange(of: song){ _, _ in
+                saveWithDebounce()
         }
         .onChange(of: attributedContent.string) { _, _ in
             saveWithDebounce()
@@ -334,6 +345,7 @@ struct EntryEditorView: View {
         if let entry = store.entries.first(where: { Calendar.current.isDate($0.createdAt, inSameDayAs: date) }) {
             existingEntry = entry
             title = entry.title
+            song = entry.song
 
             if let data = entry.attributedContent,
                let attributed = try? NSAttributedString(data: data, documentAttributes: nil) {
@@ -346,6 +358,7 @@ struct EntryEditorView: View {
         } else {
             existingEntry = nil
             title = ""
+            song = ""
             attributedContent = NSAttributedString(string: "", attributes: [
                 .font: getSerifFont(size: fontSize)
             ])
@@ -354,7 +367,7 @@ struct EntryEditorView: View {
 
     private func saveCurrentEntry() {
         let content = attributedContent.string
-        guard !content.isEmpty || !title.isEmpty else {
+        guard !content.isEmpty || !title.isEmpty || !song.isEmpty else {
             if let entry = existingEntry {
                 store.deleteEntry(entry)
             }
@@ -368,6 +381,7 @@ struct EntryEditorView: View {
 
         if var entry = existingEntry {
             entry.title = title
+            entry.song = song
             entry.content = content
             entry.attributedContent = attributedData
             entry.touch()
@@ -375,6 +389,7 @@ struct EntryEditorView: View {
         } else {
             let newEntry = JournalEntry(
                 title: title,
+                song: song,
                 content: content,
                 attributedContent: attributedData,
                 createdAt: date,
